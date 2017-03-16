@@ -328,8 +328,8 @@ calc64(const uint8_t *buf, addr_t start, addr_t end, int r)
         uint32_t op = *(uint32_t *)(buf + i);
         unsigned reg = op & 0x1F;
         if ((op & 0x9F000000) == 0x90000000) {
-            unsigned adr = ((op & 0x60000000) >> 17) | ((op & 0xFFFFE0) << 9);
-            //printf("%llx: ADRP X%d, 0x%x\n", i, reg, adr);
+            signed adr = ((op & 0x60000000) >> 17) | ((op & 0xFFFFE0) << 9);
+            //printf("%llx: ADRP X%d, 0x%llx\n", i, reg, adr + (i & ~0xFFF));
             value[reg] = adr + (i & ~0xFFF);
         } else if ((op & 0xFF000000) == 0x91000000) {
             unsigned rn = (op >> 5) & 0x1F;

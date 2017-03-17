@@ -3,3 +3,4 @@ kext_tool:	extract kext and attempt to resolve symbols. 32b kernels and 64b kern
 iokit_tool:	parse iokit classes from a kext as idc or plain text (suitable for further processing)
 iokit_tool_10:	parse iokit classes from a kext as idc or plain text (suitable for further processing). For 64b kexts >= iOS 10
 rtti_tool:	the magic tool for the desperate: apply it on a symbolicated binary and try to reconstruct the classes on a stripped one.
+kernel/knonce:	allows generating whatever nonces inside a running kernel < iOS10

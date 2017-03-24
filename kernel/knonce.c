@@ -1010,7 +1010,7 @@ main(int argc, char **argv)
         return 1;
     }
 
-    BNCN = strtoul(argv[1], NULL, 0);
+    BNCN = strtoull(argv[1], NULL, 0);
     p = (uint8_t *)&what;
     p[0] = BNCN >> 56;
     p[1] = BNCN >> 48;
@@ -1068,7 +1068,7 @@ main(int argc, char **argv)
         printf("patching 0x%llx\n", where);
 #ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
         rv = kwrite_uint64(where, TRAMPOLINE_ADDR);
-        assert(rv == sizeof(TRAMPOLINE_ADDR));
+        assert(rv == sizeof(uint64_t));
 #endif
     } else {
         ((uint64_t *)stuff32)[2] = what;
@@ -1076,7 +1076,7 @@ main(int argc, char **argv)
         printf("patching 0x%llx\n", where);
 #ifdef __ENVIRONMENT_IPHONE_OS_VERSION_MIN_REQUIRED__
         rv = kwrite_uint32(where, TRAMPOLINE_ADDR + 1);
-        assert(rv == sizeof(TRAMPOLINE_ADDR));
+        assert(rv == sizeof(uint32_t));
 #endif
     }
     dump_file("_tramp", -1, stuff, sizeof_stuff);

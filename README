@@ -1,3 +1,4 @@
+patchfinder64:	basic blocks for ARM64 patchfinder (wip)
 kext_tool_10:	extract kext and attempt to resolve symbols. For 64b kernels >= iOS 10
 kext_tool:	extract kext and attempt to resolve symbols. 32b kernels and 64b kernels < iOS 10
 iokit_tool:	parse iokit classes from a kext as idc or plain text (suitable for further processing)

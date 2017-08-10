@@ -31,6 +31,8 @@ typedef unsigned long long addr_t;
 
 #define IS64(image) (*(uint8_t *)(image) & 1)
 
+#define MACHO(p) ((*(unsigned int *)(p) & ~1) == 0xfeedface)
+
 static int for_ida = 0;
 static int for_sqlite = 0;
 static sqlite3_stmt *g_stmt;
@@ -50,7 +52,7 @@ get_range(uint8_t *buf, size_t size, addr_t *end)
 
     *end = 0;
 
-    if ((buf[0] & 0xFE) != 0xCE && buf[1] != 0xFA && buf[2] != 0xED && buf[3] != 0xFE) {
+    if (!MACHO(buf)) {
         return -1;
     }
     if (IS64(buf)) {
@@ -99,7 +101,7 @@ get_base(uint8_t *buf, size_t size)
 
     (void)size;
 
-    if ((buf[0] & 0xFE) != 0xCE && buf[1] != 0xFA && buf[2] != 0xED && buf[3] != 0xFE) {
+    if (!MACHO(buf)) {
         return -1;
     }
     if (IS64(buf)) {
@@ -137,7 +139,7 @@ get_sect_data(const uint8_t *p, size_t size, const char *segname, const char *se
 
     if (sz) *sz = 0;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {
@@ -365,7 +367,7 @@ show_exports(const uint8_t *buf, size_t size, int thumbize)
     q = p + sizeof(struct mach_header);
     is64 = 0;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {
@@ -602,7 +604,7 @@ show_imports(uint8_t *buf, size_t size)
 
     (void)size;
 
-    if ((buf[0] & 0xFE) != 0xCE && buf[1] != 0xFA && buf[2] != 0xED && buf[3] != 0xFE) {
+    if (!MACHO(buf)) {
         return -1;
     }
 

@@ -34,6 +34,8 @@ struct dependency {
 
 #define IS64(image) (*(uint8_t *)(image) & 1)
 
+#define MACHO(p) ((*(unsigned int *)(p) & ~1) == 0xfeedface)
+
 /* generic stuff *************************************************************/
 
 #define UCHAR_MAX 255
@@ -104,7 +106,7 @@ get_base(uint8_t *buf, size_t size)
 
     (void)size;
 
-    if ((buf[0] & 0xFE) != 0xCE && buf[1] != 0xFA && buf[2] != 0xED && buf[3] != 0xFE) {
+    if (!MACHO(buf)) {
         return -1;
     }
     if (IS64(buf)) {
@@ -142,7 +144,7 @@ get_sect_data(const uint8_t *p, size_t size, const char *segname, const char *se
 
     if (sz) *sz = 0;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {

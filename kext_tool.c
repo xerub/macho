@@ -24,6 +24,8 @@ typedef unsigned long long addr_t;
 
 #define IS64(image) (*(uint8_t *)(image) & 1)
 
+#define MACHO(p) ((*(unsigned int *)(p) & ~1) == 0xfeedface)
+
 static size_t align = 0xFFF;
 
 static __inline size_t
@@ -104,7 +106,7 @@ get_sect_data(const uint8_t *p, size_t size, const char *segname, const char *se
 
     if (sz) *sz = 0;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {
@@ -167,7 +169,7 @@ get_low_sect(const uint8_t *p, size_t size)
 
     (void)size;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {
@@ -256,7 +258,7 @@ again:
     q = p + sizeof(struct mach_header);
     is64 = 0;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {
@@ -817,7 +819,7 @@ again:
     q = p + sizeof(struct mach_header);
     is64 = 0;
 
-    if ((p[0] & 0xFE) != 0xCE && p[1] != 0xFA && p[2] != 0xED && p[3] != 0xFE) {
+    if (!MACHO(p)) {
         return 0;
     }
     if (IS64(p)) {

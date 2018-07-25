@@ -1505,6 +1505,46 @@ main(int argc, char **argv)
     if (db) {
         if (for_ida > 0) {
             printf("#include <idc.idc>\n");
+            printf("\nstatic stubs(void)\n");
+            printf("{\n");
+            printf("    auto seg, ea, imports_start, imports_end;\n");
+            printf("    auto xref, seg_name;\n");
+            printf("    auto func_ea, func_name, new_name;\n");
+            printf("\n");
+            printf("    seg = FirstSeg();\n");
+            printf("\n");
+            printf("    while (seg != BADADDR) {\n");
+            printf("        if (SegName(seg) == \"UNDEF\") {\n");
+            printf("            imports_start = SegStart(seg);\n");
+            printf("            imports_end = SegEnd(seg);\n");
+            printf("            ea = imports_start;\n");
+            printf("\n");
+            printf("            while (ea < imports_end) {\n");
+            printf("                xref = RfirstB0(ea);\n");
+            printf("\n");
+            printf("                while(xref != BADADDR) {\n");
+            printf("                    seg_name = SegName(xref);\n");
+            printf("                    new_name = Name(ea) + \"_stub\";\n");
+            printf("                    func_name = GetFunctionName(xref);\n");
+            printf("                    func_ea = LocByName(func_name);\n");
+            printf("\n");
+            printf("                    if (MakeName(func_ea, new_name) == 0) {\n");
+            printf("                        new_name = Name(ea) + \"_2_stub\";\n");
+            printf("                        MakeName(func_ea, new_name);\n");
+            printf("                    }\n");
+            printf("\n");
+            printf("                    xref = RnextB0(ea, xref);\n");
+            printf("                }\n");
+            printf("\n");
+            printf("                ea = ea + 8;\n");
+            printf("            }\n");
+            printf("\n");
+            printf("            break;\n");
+            printf("        }\n");
+            printf("\n");
+            printf("        seg = NextSeg(seg);\n");
+            printf("    }\n");
+            printf("}\n");
             printf("\nstatic member(id, ea, name, off)\n");
             printf("{\n");
             printf("    auto str, num;\n");
@@ -1569,6 +1609,7 @@ main(int argc, char **argv)
             parse_kexts(0, db);
         }
         if (for_ida > 0) {
+            printf("    stubs();\n");
             printf("}\n");
         }
         sqlite3_close(db);

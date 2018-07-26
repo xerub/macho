@@ -899,7 +899,7 @@ process_table32(addr_t table, addr_t base, const char *name, unsigned sz, sqlite
     if (for_ida > 0) {
         //i += 2;
         //sbase -= 2 * sizeof(uint32_t);
-        printf("\tid = AddStrucEx(-1, \"" VPREFIX "%s\", 0);\n", name);
+        printf("    id = AddStrucEx(-1, \"" VPREFIX "%s\", 0);\n", name);
     } else if (for_ida < 0) {
         printf("struct %s {\n", name);
     } else {
@@ -920,7 +920,7 @@ process_table32(addr_t table, addr_t base, const char *name, unsigned sz, sqlite
             sym = strdup(tmp);
         }
         if (for_ida > 0) {
-            printf("\tmember(id, 0x%llx, \"%s\", %zu);\n", val, sym, i * sizeof(uint32_t));
+            printf("    member(id, 0x%llx, \"%s\", %zu);\n", val, sym, i * sizeof(uint32_t));
             i++;
             //printf("Message(\"[%%s]\\n\", Demangle(\"%s\", 0));\n", sym);
         } else if (for_ida < 0) {
@@ -928,28 +928,28 @@ process_table32(addr_t table, addr_t base, const char *name, unsigned sz, sqlite
             assert(dem);
             paren = strchr(dem, '(');//)
             assert(paren);
-            printf("\t" RETTYPE "(*%.*s)%s;\n", (int)(paren - dem), dem, paren);
+            printf("    " RETTYPE "(*%.*s)%s;\n", (int)(paren - dem), dem, paren);
             free(dem);
         } else {
-            printf("\t%s\n", sym);
+            printf("    %s\n", sym);
         }
         free(sym);
         start += sizeof(uint32_t);
     }
 
     if (for_ida > 0) {
-        printf("\tMakeStruct(0x%llx, \"" VPREFIX "%s\");\n", sbase, name);
+        printf("    MakeStruct(0x%llx, \"" VPREFIX "%s\");\n", sbase, name);
 
-        printf("\tid = AddStrucEx(-1, \"" OPREFIX "%s\", 0);\n", name);
-        printf("\tAddStrucMember(id, \"%s\", %u, 0x25500400, 0XFFFFFFFF, %zu, 0XFFFFFFFF, 0, 0x000002);\n", "vtable", 0, sizeof(uint32_t));
-        printf("\tSetType(GetMemberId(id, %u), \"" VPREFIX "%s *\");\n", 0, name);
+        printf("    id = AddStrucEx(-1, \"" OPREFIX "%s\", 0);\n", name);
+        printf("    AddStrucMember(id, \"%s\", %u, 0x25500400, 0XFFFFFFFF, %zu, 0XFFFFFFFF, 0, 0x000002);\n", "vtable", 0, sizeof(uint32_t));
+        printf("    SetType(GetMemberId(id, %u), \"" VPREFIX "%s *\");\n", 0, name);
         if (sz > sizeof(uint32_t)) {
             sz -= sizeof(uint32_t);
             if (sz > 1) {
-                printf("\tAddStrucMember(id, \"field_%zX\", %#zX, 0x000400, -1, %u);\n", sizeof(uint32_t), sizeof(uint32_t), sz - 1);
+                printf("    AddStrucMember(id, \"field_%zX\", %#zX, 0x000400, -1, %u);\n", sizeof(uint32_t), sizeof(uint32_t), sz - 1);
             }
             sz += sizeof(uint32_t) - 1;
-            printf("\tAddStrucMember(id, \"field_%X\", %#X, 0x000400, -1, 1);\n", sz, sz);
+            printf("    AddStrucMember(id, \"field_%X\", %#X, 0x000400, -1, 1);\n", sz, sz);
         }
     } else if (for_ida < 0) {
         printf("};\n");
@@ -979,7 +979,7 @@ process_table64(addr_t table, addr_t base, const char *name, unsigned sz, sqlite
     if (for_ida > 0) {
         //i += 2;
         //sbase -= 2 * sizeof(uint64_t);
-        printf("\tid = AddStrucEx(-1, \"" VPREFIX "%s\", 0);\n", name);
+        printf("    id = AddStrucEx(-1, \"" VPREFIX "%s\", 0);\n", name);
     } else if (for_ida < 0) {
         printf("struct %s {\n", name);
     } else {
@@ -1000,7 +1000,7 @@ process_table64(addr_t table, addr_t base, const char *name, unsigned sz, sqlite
             sym = strdup(tmp);
         }
         if (for_ida > 0) {
-            printf("\tmember(id, 0x%llx, \"%s\", %zu);\n", val, sym, i * sizeof(uint64_t));
+            printf("    member(id, 0x%llx, \"%s\", %zu);\n", val, sym, i * sizeof(uint64_t));
             i++;
             //printf("Message(\"[%%s]\\n\", Demangle(\"%s\", 0));\n", sym);
         } else if (for_ida < 0) {
@@ -1008,35 +1008,35 @@ process_table64(addr_t table, addr_t base, const char *name, unsigned sz, sqlite
 			if (!dem) {
 				//printf("\nProblem SYMBOL!!: -  %s\n",sym);
 				dem = sym;
-				 printf("\t" RETTYPE "(*%s)();\n", dem);
+				 printf("    " RETTYPE "(*%s)();\n", dem);
 			}
 			else {
             assert(dem);
             paren = strchr(dem, '(');//)
             assert(paren);
-            printf("\t" RETTYPE "(*%.*s)%s;\n", (int)(paren - dem), dem, paren);
+            printf("    " RETTYPE "(*%.*s)%s;\n", (int)(paren - dem), dem, paren);
             free(dem);
 			}
         } else {
-            printf("\t%s\n", sym);
+            printf("    %s\n", sym);
         }
         free(sym);
         start += sizeof(uint64_t);
     }
 
     if (for_ida > 0) {
-        printf("\tMakeStruct(0x%llx, \"" VPREFIX "%s\");\n", sbase, name);
+        printf("    MakeStruct(0x%llx, \"" VPREFIX "%s\");\n", sbase, name);
 
-        printf("\tid = AddStrucEx(-1, \"" OPREFIX "%s\", 0);\n", name);
-        printf("\tAddStrucMember(id, \"%s\", %u, 0x35500400, 0XFFFFFFFFFFFFFFFF, %zu, 0XFFFFFFFFFFFFFFFF, 0, 0x000009);\n", "vtable", 0, sizeof(uint64_t));
-        printf("\tSetType(GetMemberId(id, %u), \"" VPREFIX "%s *\");\n", 0, name);
+        printf("    id = AddStrucEx(-1, \"" OPREFIX "%s\", 0);\n", name);
+        printf("    AddStrucMember(id, \"%s\", %u, 0x35500400, 0XFFFFFFFFFFFFFFFF, %zu, 0XFFFFFFFFFFFFFFFF, 0, 0x000009);\n", "vtable", 0, sizeof(uint64_t));
+        printf("    SetType(GetMemberId(id, %u), \"" VPREFIX "%s *\");\n", 0, name);
         if (sz > sizeof(uint64_t)) {
             sz -= sizeof(uint64_t);
             if (sz > 1) {
-                printf("\tAddStrucMember(id, \"field_%zX\", %#zX, 0x000400, -1, %u);\n", sizeof(uint64_t), sizeof(uint64_t), sz - 1);
+                printf("    AddStrucMember(id, \"field_%zX\", %#zX, 0x000400, -1, %u);\n", sizeof(uint64_t), sizeof(uint64_t), sz - 1);
             }
             sz += sizeof(uint64_t) - 1;
-            printf("\tAddStrucMember(id, \"field_%X\", %#X, 0x000400, -1, 1);\n", sz, sz);
+            printf("    AddStrucMember(id, \"field_%X\", %#X, 0x000400, -1, 1);\n", sz, sz);
         }
     } else if (for_ida < 0) {
         printf("};\n");
@@ -1361,6 +1361,46 @@ main(int argc, char **argv)
     if (db) {
         if (for_ida > 0) {
             printf("#include <idc.idc>\n");
+            printf("\nstatic stubs(void)\n");
+            printf("{\n");
+            printf("    auto seg, ea, imports_start, imports_end;\n");
+            printf("    auto xref, seg_name;\n");
+            printf("    auto func_ea, func_name, new_name;\n");
+            printf("\n");
+            printf("    seg = FirstSeg();\n");
+            printf("\n");
+            printf("    while (seg != BADADDR) {\n");
+            printf("        if (SegName(seg) == \"UNDEF\") {\n");
+            printf("            imports_start = SegStart(seg);\n");
+            printf("            imports_end = SegEnd(seg);\n");
+            printf("            ea = imports_start;\n");
+            printf("\n");
+            printf("            while (ea < imports_end) {\n");
+            printf("                xref = RfirstB0(ea);\n");
+            printf("\n");
+            printf("                while(xref != BADADDR) {\n");
+            printf("                    seg_name = SegName(xref);\n");
+            printf("                    new_name = Name(ea) + \"_stub\";\n");
+            printf("                    func_name = GetFunctionName(xref);\n");
+            printf("                    func_ea = LocByName(func_name);\n");
+            printf("\n");
+            printf("                    if (MakeName(func_ea, new_name) == 0) {\n");
+            printf("                        new_name = Name(ea) + \"_2_stub\";\n");
+            printf("                        MakeName(func_ea, new_name);\n");
+            printf("                    }\n");
+            printf("\n");
+            printf("                    xref = RnextB0(ea, xref);\n");
+            printf("                }\n");
+            printf("\n");
+            printf("                ea = ea + 4;\n");
+            printf("            }\n");
+            printf("\n");
+            printf("            break;\n");
+            printf("        }\n");
+            printf("\n");
+            printf("        seg = NextSeg(seg);\n");
+            printf("    }\n");
+            printf("}\n");
             printf("\nstatic member(id, ea, name, off)\n");
             printf("{\n");
             printf("    auto str, num;\n");
@@ -1416,7 +1456,7 @@ main(int argc, char **argv)
             }
             printf("    SetType(GetMemberId(id, off), proto);\n");
             printf("}\n");
-            printf("\nstatic main(void)\n{\n\tauto id;\n");
+            printf("\nstatic main(void)\n{\n    auto id;\n");
         }
         if (one_kext) {
             parse_one(0, get_base(kernel, kernel_size), db);
@@ -1424,6 +1464,7 @@ main(int argc, char **argv)
             parse_kexts(0, db);
         }
         if (for_ida > 0) {
+            printf("    stubs();\n");
             printf("}\n");
         }
         sqlite3_close(db);

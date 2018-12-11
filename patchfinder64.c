@@ -168,6 +168,18 @@ bof64(const uint8_t *buf, addr_t start, addr_t where)
                     //printf("%x: STP x, y, [SP,#-imm]!\n", prev);
                     return prev;
                 }
+
+                for (addr_t diff = 4; diff < delta/4+4; diff+=4) {
+                    uint32_t ai = *(uint32_t *)(buf + where - diff);
+                    // SUB SP, SP, #imm
+                    if ((ai&0xFFC003FF) == 0xD10003FF) {
+                        return where - diff;
+                    }
+                    // Not stp and not str
+                    if (((ai & 0xFFC003E0) != 0xA90003E0) && (ai&0xFFC001F0) != 0xF90001E0) {
+                        break;
+                    }
+                }
             }
         }
     }

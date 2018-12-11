@@ -162,11 +162,24 @@ bof64(const uint8_t *buf, addr_t start, addr_t where)
             unsigned delta = (op >> 10) & 0xFFF;
             //printf("%x: ADD X29, SP, #0x%x\n", where, delta);
             if ((delta & 0xF) == 0) {
+                addr_t diff;
                 addr_t prev = where - ((delta >> 4) + 1) * 4;
                 uint32_t au = *(uint32_t *)(buf + prev);
                 if ((au & 0xFFC003E0) == 0xA98003E0) {
                     //printf("%x: STP x, y, [SP,#-imm]!\n", prev);
                     return prev;
+                }
+
+                for (diff = 4; diff < delta / 4 + 4; diff += 4) {
+                    uint32_t ai = *(uint32_t *)(buf + where - diff);
+                    // SUB SP, SP, #imm
+                    if ((ai & 0xFFC003FF) == 0xD10003FF) {
+                        return where - diff;
+                    }
+                    // Not stp and not str
+                    if ((ai & 0xFFC003E0) != 0xA90003E0 && (ai & 0xFFC001F0) != 0xF90001E0) {
+                        break;
+                    }
                 }
             }
         }
